@@ -72,7 +72,7 @@ const getCaseByCountry = async () => {
 const getImgLink = link => {
     return link.match(/(?=<a href).*(?<=<\/a>)/gs);
 }
-const rssLink = ['https://vnexpress.net/rss/tin-moi-nhat.rss', 'https://tuoitre.vn/rss/tin-moi-nhat.rss']
+const rssLink = ['https://vnexpress.net/rss/tin-moi-nhat.rss']
 
 const ncovid = ["covid", "ncovid", "covid-19", "ncov", "ncov-19"];
 
@@ -103,7 +103,6 @@ setTimeout(() => {
     getWorld()
     getCountryName()
     crawPost(rssLink[0])
-    crawPost(rssLink[1])
 }, 2000);
 
 setTimeout(() => {
@@ -114,7 +113,6 @@ setTimeout(() => {
 setInterval(() => {
     //craw news
     crawPost(rssLink[0])
-    crawPost(rssLink[1])
 
     //craw cases
     getWorld()
