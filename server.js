@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 5000;
 const cors = require('cors')
 const World = require('./services/world');
 const Country = require('./services/country');
+const News = require('./services/news');
 const db = require('./services/db');
 const crawler = require('./crawler')
 

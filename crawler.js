@@ -1,11 +1,16 @@
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
-
 const request = require('request');
 const World = require('./services/world');
 const Country = require('./services/country');
 const Moment = require('moment');
+let Parser = require('rss-parser');
+let parser = new Parser();
+const News = require('./services/news');
+
+
+
 const getWorld = () => {
     request("https://covid19.mathdro.id/api/", async (err, request, body) => {
         let data = JSON.parse(body);
@@ -62,14 +67,57 @@ const getCaseByCountry = async () => {
         })
     }
 }
-getWorld()
-getCountryName()
-getCaseByCountry()
+
+
+const getImgLink = link => {
+    return link.match(/(?=<a href).*(?<=<\/a>)/gs);
+}
+const rssLink = ['https://vnexpress.net/rss/tin-moi-nhat.rss', 'https://tuoitre.vn/rss/tin-moi-nhat.rss']
+
+const ncovid = ["covid", "ncovid", "covid-19", "ncov", "ncov-19"];
+
+const crawPost = async linkrss => {
+    let feed = await parser.parseURL(linkrss);
+    feed.items.forEach(async item => {
+        const aboutCV19 = ncovid.some(s => item.title.toLowerCase().includes(s));
+        if (aboutCV19) {
+            const newItem = {
+                link: item.link,
+                title: item.title,
+                image: getImgLink(item.content).toString(),
+                content: item.contentSnippet,
+                date: item.pubDate,
+            }
+            await News.addNew(newItem);
+        }
+
+    });
+}
+
+//first
+
+
+
+
+setTimeout(() => {
+    getWorld()
+    getCountryName()
+    crawPost(rssLink[0])
+    crawPost(rssLink[1])
+}, 2000);
+
+setTimeout(() => {
+    getCaseByCountry()
+}, 3000)
 
 // get data each 2 hours
 setInterval(() => {
+    //craw news
+    crawPost(rssLink[0])
+    crawPost(rssLink[1])
+
+    //craw cases
     getWorld()
     getCountryName()
     getCaseByCountry()
-
 }, 1000 * 60 * 60 * 2)
