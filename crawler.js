@@ -96,9 +96,6 @@ const crawPost = async linkrss => {
 
 //first
 
-
-
-
 setTimeout(() => {
     getWorld()
     getCountryName()
